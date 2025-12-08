@@ -17,8 +17,8 @@ def view_selector(frames, num_views=5, min_frame_dist=25, max_frame_dist=192):
     image_indices = [start_frame, end_frame] + sampled_frames
     return image_indices
 
-list_path = 'data/test/full_list.txt'  # 场景列表，每行一个json路径
-output_json = 'data/view_idx_list-6-3.json'       # 输出文件名
+list_path = 'data/test/full_list.txt'
+output_json = 'data/view_idx_list-6-3.json'
 input_num_views = 6
 output_num_views = 3
 view_idx_list = {}
@@ -48,5 +48,3 @@ for scene_path in all_scene_paths:
 
 with open(output_json, 'w', encoding='utf-8') as f:
     json.dump(view_idx_list, f, indent=4, ensure_ascii=True)
-
-print(f"已生成 {output_json}，共 {len(view_idx_list)} 个场景。")

@@ -104,6 +104,8 @@ We have also discussed the efficient settings (single/two GPU training) in the p
 
 ## 3. Inference
 
+### 3.1 Standard Inference
+
 ```bash
 torchrun --nproc_per_node 8 --nnodes 1 \
 --rdzv_id 18635 --rdzv_backend c10d --rdzv_endpoint localhost:29506 \
@@ -123,6 +125,56 @@ inference_out_dir = ./experiments/evaluation/test
 We use `./data/evaluation_index_re10k.json` to specify the input and target view indice. This json file is originally from [pixelSplat](https://github.com/dcharatan/pixelsplat). 
 
 After the inference, the code will generate a html file in the `inference_out_dir` folder. You can open the html file to view the results.
+
+### 3.2 Incremental Inference
+
+For incremental inference, where input views are processed one by one with each inference result exported separately, use the `inference_incremental.py` script:
+
+```bash
+torchrun --nproc_per_node 8 --nnodes 1 \
+--rdzv_id 18635 --rdzv_backend c10d --rdzv_endpoint localhost:29506 \
+inference_incremental.py --config "configs/LVSM_scene_decoder_only.yaml" \
+training.dataset_path = "./preprocessed_data/test/full_list.txt" \
+training.batch_size_per_gpu = 1 \
+training.target_has_input = false \
+training.num_input_views = 4 \
+training.num_target_views = 1 \
+inference.if_inference = true \
+inference.compute_metrics = true \
+inference.render_video = true \
+inference.checkpoint_dir = ./experiments/evaluation/incremental
+```
+
+**Key Features:**
+- Processes input views sequentially (1, 2, 3, 4 views, etc.)
+- Exports results after each view is processed
+- Utilizes KV cache for improved efficiency
+- Results saved in separate subdirectories for each view count
+
+**Output Structure:**
+```
+experiments/evaluation/incremental/
+├── view_000/  # Results with 1 input view
+├── view_001/  # Results with 2 input views
+├── view_002/  # Results with 3 input views
+└── view_003/  # Results with 4 input views
+```
+
+For more details, see [Incremental Inference Guide](INCREMENTAL_INFERENCE.md).
+
+### 3.3 Performance Comparison
+
+To compare the performance between standard and incremental inference:
+
+```bash
+python compare_inference.py --max_views 8 --num_trials 3
+```
+
+This will generate performance metrics and visualization plots comparing:
+- Inference time
+- Memory usage
+- Speedup ratios
+- Memory savings
 
 ## 4. Citation 
 

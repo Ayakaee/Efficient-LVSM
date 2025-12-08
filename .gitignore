@@ -10,7 +10,6 @@ feature_visualizations/
 objaverse-xl/scripts/rendering/data*
 dataset/
 logs
-configs/
 dinov3/
 back/
 data/
@@ -24,7 +23,6 @@ todo.md
 experiments/
 pretrained/
 log/
-configs/api_keys.yaml
 wandb/
 .DS_Store
 .vscode

@@ -1,4 +1,10 @@
-# Copyright (c) 2025 Haian Jin. Created for the LVSM project (ICLR 2025).
+# Copyright (c) 2025 Haian Jin. Original LVSM implementation (ICLR 2025).
+# Copyright (c) 2025 Yihang Sun. Modifications for Efficient-LVSM.
+#
+# This code is based on the LVSM project by Haian Jin et al.
+# Original repository: https://github.com/Haian-Jin/LVSM
+# 
+# Licensed under CC BY-NC-SA 4.0 - see LICENSE.md for details.
 
 import torch
 import torch.nn as nn
@@ -193,7 +199,7 @@ class QK_Norm_SelfAttention(nn.Module):
 class QK_Norm_CrossAttention(nn.Module):
     """
     Cross-attention with optional Q-K normalization.
-    Q 来自 target，K/V 来自 input。
+    Q comes from target, K/V come from input.
     """
 
     def __init__(
