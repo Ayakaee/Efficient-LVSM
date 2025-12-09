@@ -6,12 +6,12 @@ import torch
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader, DistributedSampler
 import torch.distributed as dist
-from setup import init_config, init_distributed, init_logging
-from utils.metric_utils import export_results, summarize_evaluation
 import argparse
 import numpy as np
 import shutil
 from easydict import EasyDict as edict
+from setup import init_config, init_distributed, init_logging
+from utils.metric_utils import export_results, summarize_evaluation
 
 # Load config and read(override) arguments from CLI
 config = init_config()
@@ -49,11 +49,11 @@ dataloader = DataLoader(
     dataset,
     batch_size=config.training.batch_size_per_gpu,
     shuffle=False,
-    # num_workers=config.training.num_workers,
-    # prefetch_factor=config.training.prefetch_factor,
-    # persistent_workers=True,
-    # pin_memory=False,
-    # drop_last=True,
+    num_workers=config.training.num_workers,
+    prefetch_factor=config.training.prefetch_factor,
+    persistent_workers=True,
+    pin_memory=False,
+    drop_last=True,
     sampler=datasampler
 )
 dataloader_iter = iter(dataloader)
@@ -84,10 +84,10 @@ dist.barrier()
 
 datasampler.set_epoch(0)
 model.eval()
-print(len(dataloader))
 
-if os.path.exists(os.path.join(config.inference.checkpoint_dir, 'visualize')):
-    shutil.rmtree(os.path.join(config.inference.checkpoint_dir, 'visualize'))
+# remove previous results
+if ddp_info.is_main_process:
+    shutil.rmtree(os.path.join(config.inference.checkpoint_dir, 'visualize'), ignore_errors=True)
 with torch.no_grad(), torch.autocast(
     enabled=config.training.use_amp,
     device_type="cuda",
@@ -97,7 +97,7 @@ with torch.no_grad(), torch.autocast(
     for batch_idx, batch in enumerate(dataloader):
         batch = {k: v.to(ddp_info.device) if type(v) == torch.Tensor else v for k, v in batch.items()}
         input, target = model.module.process_data(batch, has_target_image=True, target_has_input = config.training.target_has_input, compute_rays=True)
-        result = model(batch, input, target, train=False)
+        result = model(input, target, train=False)
             
         if config.inference.get("render_video", False):
             result= model.module.render_video(result, **config.inference.render_video_config)

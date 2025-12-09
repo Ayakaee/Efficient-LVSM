@@ -188,7 +188,7 @@ while cur_train_step <= total_train_steps and (datetime.now() - training_start_t
     ):
         input, target = model.module.process_data(batch, has_target_image=True, target_has_input = config.training.target_has_input, compute_rays=True)
         # print(input.image.shape)
-        ret_dict = model(batch, input, target)
+        ret_dict = model(input, target)
 
     current_epoch = int(cur_train_step * total_batch_size // len(dataset))
     if current_epoch > config.training.repa_stop_epoch and config.training.repa_stop_epoch > -1:

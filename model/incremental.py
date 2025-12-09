@@ -217,13 +217,13 @@ class Images2LatentScene(nn.Module):
         self.self_cross_blocks = nn.ModuleList([
             QK_Norm_SelfCrossAttentionBlock(
                 config.d, config.d_head, use_qk_norm=use_qk_norm, use_flex_attention=use_flex_attention
-            ) for _ in range(config.n_layer // 2)
+            ) for _ in range(config.n_layer)
         ])
 
         self.input_self_attn_blocks = nn.ModuleList([
             QK_Norm_SelfAttentionBlock(
                 config.d, config.d_head, use_qk_norm=use_qk_norm, use_flex_attention=use_flex_attention
-            ) for _ in range(config.n_layer // 2)
+            ) for _ in range(config.n_layer)
         ])
         # Apply special initialization if configured
         if config.get("special_init", False):
@@ -396,20 +396,19 @@ class Images2LatentScene(nn.Module):
         b = bv // v_input
         
         # Self-Cross
-        if self.self_cross_blocks is not None:
-            for idx, block in enumerate(self.self_cross_blocks):
-                input_tokens = input_tokens.view(b * v_input, n_patches, d)
-                input_tokens = self.input_self_attn_blocks[idx](input_tokens)
-                if self.config.training.enable_repa:
-                    if idx + 1 in self.repa_x['input']:
-                        self.repa_x['input'][idx + 1] = input_tokens[:, :, :]
-                input_tokens = input_tokens.view(b, v_input * (n_patches), d)
-                target_tokens = block(input_tokens, target_tokens)
-                    
-                if self.config.training.enable_repa:
-                    if idx + 1 in self.repa_x['target']:
-                        self.repa_x['target'][idx + 1] = target_tokens[:, :, :]
-        
+        for idx, block in enumerate(self.self_cross_blocks):
+            input_tokens = input_tokens.view(b * v_input, n_patches, d)
+            input_tokens = self.input_self_attn_blocks[idx](input_tokens)
+            if self.config.training.enable_repa:
+                if idx + 1 in self.repa_x['input']:
+                    self.repa_x['input'][idx + 1] = input_tokens
+            input_tokens = input_tokens.view(b, v_input * (n_patches), d)
+            target_tokens = block(input_tokens, target_tokens)
+                
+            if self.config.training.enable_repa:
+                if idx + 1 in self.repa_x['target']:
+                    self.repa_x['target'][idx + 1] = target_tokens
+    
         return target_tokens
     
     def clear_kv_cache(self):
@@ -538,12 +537,11 @@ class Images2LatentScene(nn.Module):
             return torch.cat([images * 2.0 - 1.0, pose_cond], dim=2)
     
     
-    def forward(self, data_batch, input, target, has_target_image=True, train=True, incremental_mode=False):
+    def forward(self, input, target, has_target_image=True, train=True, incremental_mode=False):
         """
         Forward inference method.
         
         Args:
-            data_batch: Data batch
             input: Input data
             target: Target data
             has_target_image: Whether target image exists

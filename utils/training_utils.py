@@ -63,8 +63,8 @@ def create_optimizer(model, weight_decay, learning_rate, betas):
         optim_module_names = sorted(set(get_module_name(name) for name in optimized_param_dict.keys()))
         frozen_module_names = sorted(set(get_module_name(name) for name in set(all_param_dict.keys()) - set(optimized_param_dict.keys())))
         encoder_params = 0
-        if model.module.image_encoder is not None:
-            encoder_params = sum(p.numel() for p in model.module.image_encoder.parameters())
+        if model.module.repa_encoder is not None:
+            encoder_params = sum(p.numel() for p in model.module.repa_encoder.parameters())
         print(f'Total parameters: {format_number(total_params)}, Trainable parameters: {format_number(trainable_params)}, encoder parameters: {format_number(encoder_params)}')        
         print(f'Optimized parameters: {optim_module_names}')
         print(f'Frozen parameters: {frozen_module_names}')

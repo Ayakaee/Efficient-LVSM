@@ -12,7 +12,10 @@ dataset/
 logs
 dinov3/
 back/
-data/
+data/views
+data/test
+data/train
+data/0*
 logs/
 todo.md
 *.sh

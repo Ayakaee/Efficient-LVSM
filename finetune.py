@@ -12,7 +12,6 @@ import torch.distributed as dist
 from setup import init_config, init_distributed, init_wandb_and_backup, init_logging, init_file_logging
 from utils.metric_utils import visualize_intermediate_results
 from utils.training_utils import create_optimizer, create_lr_scheduler, auto_resume_job, print_rank0
-from model.encoder import load_encoders, preprocess_raw_image
 from einops import rearrange, repeat
 import torch._dynamo
 torch._dynamo.config.suppress_errors = True
@@ -250,7 +249,7 @@ def main():
             dtype=amp_dtype_mapping[config.training.amp_dtype],
         ):
             input, target = model.module.process_data(batch, has_target_image=True, target_has_input = config.training.target_has_input, compute_rays=True)
-            ret_dict = model(batch, input, target)
+            ret_dict = model(input, target)
 
         current_epoch = int(cur_train_step * total_batch_size // len(dataset))
         if current_epoch > config.training.repa_stop_epoch and config.training.repa_stop_epoch > -1:

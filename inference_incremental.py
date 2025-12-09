@@ -116,10 +116,11 @@ with torch.no_grad(), torch.autocast(
     model.module.clear_kv_cache()
     
     # Perform incremental inference for each view
-    for view_idx in range(config.training.num_input_views):
+    v_input = config.training.num_input_views
+    for view_idx in range(v_input):
         if ddp_info.is_main_process:
             print(f"\n{'='*50}")
-            print(f"Processing input view {view_idx + 1}/{config.training.num_input_views}")
+            print(f"Processing input view {view_idx + 1}/{v_input}")
             print(f"{'='*50}")
         
         # Prepare input data for current view
@@ -150,8 +151,7 @@ with torch.no_grad(), torch.autocast(
             torch.cuda.reset_peak_memory_stats()
         
         # Perform incremental inference
-        result = model(
-            batch, 
+        result = model( 
             input_view, 
             target_view, 
             train=False, 
@@ -191,13 +191,14 @@ dist.barrier()
 if ddp_info.is_main_process:
     print(f"\n{'='*60}")
     print(f"All incremental inference completed!")
-    print(f"Processed {config.training.num_input_views} input views in total")
+    print(f"Processed {v_input} input views in total")
     print(f"Results saved in: {output_dir}")
     print(f"{'='*60}\n")
     
     if config.inference.get("compute_metrics", False):
         print("Computing evaluation metrics for each view...")
-        for view_idx in range(config.training.num_input_views):
+        for view_idx in range(v_input):
+            print(view_idx)
             view_output_dir = os.path.join(output_dir, f'view_{view_idx:03d}')
             print(f"\nEvaluation results for view {view_idx + 1}:")
             summarize_evaluation(view_output_dir)

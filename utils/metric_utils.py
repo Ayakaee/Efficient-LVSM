@@ -330,20 +330,7 @@ def _save_images(result, batch_idx, out_dir, incremental=-1, save_separate_image
             Image.fromarray(comparison).save(os.path.join(out_dir, "gt_vs_pred.png"))
         else:
             Image.fromarray(comparison).save(os.path.join(out_dir, f"gt_vs_pred_{incremental}.png"))
-    # Save prediction images as video
-    pred_frames = result.render[batch_idx].detach().cpu()  # [v, c, h, w]
-    pred_frames = np.ascontiguousarray(np.array(pred_frames.to(torch.float32)))
-    pred_frames = rearrange(pred_frames, "v c h w -> v h w c")
-    if incremental == -1:
-        video_path = os.path.join(out_dir, "pred_video.mp4")
-    else:
-        video_path = os.path.join(out_dir, f"aapred_video_{incremental}.mp4")
-    data_utils.create_video_from_frames(
-        pred_frames, 
-        video_path, 
-        framerate=30
-    )
-    
+
 
 def _save_metrics(target, prediction, view_indices, out_dir, scene_name, incremental=-1):
     target = target.to(torch.float32)
