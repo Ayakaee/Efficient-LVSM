@@ -12,7 +12,6 @@ import torch.distributed as dist
 from setup import init_config, init_distributed, init_wandb_and_backup, init_logging, init_file_logging
 from utils.metric_utils import visualize_intermediate_results
 from utils.training_utils import create_optimizer, create_lr_scheduler, auto_resume_job, print_rank0
-from model.encoder import load_encoders, preprocess_raw_image
 from einops import rearrange, repeat
 import torch._dynamo
 torch._dynamo.config.suppress_errors = True

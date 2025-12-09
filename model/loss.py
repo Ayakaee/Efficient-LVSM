@@ -64,7 +64,7 @@ class PerceptualLoss(nn.Module):
         """Load pre-trained VGG weights. """
         weight_file = Path("./metric_checkpoint/imagenet-vgg-verydeep-19.mat")
         weight_file.parent.mkdir(exist_ok=True, parents=True)
-        
+        torch.distributed.barrier()
         if torch.distributed.get_rank() == 0:
             # Download weights if needed
             if not weight_file.exists():

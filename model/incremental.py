@@ -184,7 +184,6 @@ class Images2LatentScene(nn.Module):
         if self.repa_encoder is not None:
             freeze_encoder = self.config.model.get("freeze_repa_encoder", True)
             if freeze_encoder:
-                self.logger.info('freeze parameters when loading image encoder')
                 for param in self.repa_encoder.parameters():
                     param.requires_grad = False
                 self.repa_encoder.eval()
@@ -787,7 +786,7 @@ class Images2LatentScene(nn.Module):
             return None
         state_dict = checkpoint["model"]
         if not self.config.training.use_compile:
-            self.logger.info("discard _orig_mod. in loading model")
+            print("discard _orig_mod. in loading model")
             state_dict = {k.replace('_orig_mod.', '', 1): v for k, v in state_dict.items()}
         self.load_state_dict(state_dict, strict=False)
         return 0
