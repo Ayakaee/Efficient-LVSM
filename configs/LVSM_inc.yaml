@@ -7,13 +7,13 @@ model:
   repa_config: 1
 
   image_tokenizer:
-    type: linear # dino or linear or none
+    type: none
     image_size: 256
     patch_size: 8
     in_channels: 9  # 3 RGB + 3 direction + 3 Reference
-    source: github
+    source: local
     model_path: pretrained/dinov3_vitb16_pretrain_lvd1689m-73cec8be.pth
-    model_source_dir: path_to_code_directory_of_model
+    model_source_dir: dinov3
 
   target_pose_tokenizer:
     image_size: 256
@@ -37,7 +37,7 @@ training:
   allowed_gradnorm_factor: 10
   center_crop: true
   scene_scale_factor: 1.35
-  checkpoint_dir: ./experiments/checkpoints/7.8-test
+  checkpoint_dir: ./experiments/checkpoints
   checkpoint_every: 2000
   checkpoint_every_epoch: 1
   checkpoint_every_time: 1
@@ -51,11 +51,11 @@ training:
   grad_clip_norm: 5
 
   enable_repa: false
-  repa_stop_epoch: -1
   l2_loss_weight: 1.0
   lpips_loss_weight: 0.0
   perceptual_loss_weight: 0.5
   proj_loss_weight: 0.5
+  proj_loss_type: sl1
 
   lr: 0.0004
   train_steps: 20000
@@ -89,6 +89,7 @@ training:
   
   wandb_project: LVSM
   warmup: 3000
+  scheduler_type: constant
   weight_decay: 0.05
   backup_code: true
 
@@ -98,6 +99,7 @@ inference:
   if_inference: False
   compute_metrics: False
   view_idx_file_path: ./data/evaluation_index_re10k.json
+  resize: false
   render_video: False
   render_video_config:
     traj_type: interpolate

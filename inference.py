@@ -1,4 +1,10 @@
-# Copyright (c) 2025 Haian Jin. Created for the LVSM project (ICLR 2025).
+# Copyright (c) 2025 Haian Jin. Original LVSM implementation (ICLR 2025).
+# Copyright (c) 2025 Yihang Sun. Modifications for Efficient-LVSM.
+#
+# This code is based on the LVSM project by Haian Jin et al.
+# Original repository: https://github.com/Haian-Jin/LVSM
+# 
+# Licensed under CC BY-NC-SA 4.0 - see LICENSE.md for details.
 
 import importlib
 import os
@@ -17,7 +23,7 @@ from utils.metric_utils import export_results, summarize_evaluation
 config = init_config()
 config.training.num_views = config.training.num_input_views + config.training.num_target_views
 config.uniform_views = False
-log_file = config.training.get("log_file", f'logs/{config.inference.checkpoint_dir.split("/")[-1]}_eval.log')
+log_file = config.training.get("log_file", f'logs/{config.inference.inference_out_dir.split("/")[-1]}_eval.log')
 logger = init_logging(log_file)
 
 os.environ["OMP_NUM_THREADS"] = str(config.training.get("num_threads", 1))
@@ -63,7 +69,7 @@ dist.barrier()
 
 
 # Import model and load checkpoint
-model_path = config.inference.checkpoint_dir.replace("evaluation", "checkpoints")
+model_path = config.inference.checkpoint_dir
 module, class_name = config.model.class_name.rsplit(".", 1)
 LVSM = importlib.import_module(module).__dict__[class_name]
 model = LVSM(config, logger).to(ddp_info.device)
@@ -72,7 +78,7 @@ model.module.load_ckpt(model_path)
 
 
 if ddp_info.is_main_process:  
-    print(f"Running inference; save results to: {config.inference.checkpoint_dir}")
+    print(f"Running inference; save results to: {config.inference.inference_out_dir}")
     # avoid multiple processes downloading LPIPS at the same time
     import lpips
     # Suppress the warning by setting weights_only=True
@@ -87,7 +93,7 @@ model.eval()
 
 # remove previous results
 if ddp_info.is_main_process:
-    shutil.rmtree(os.path.join(config.inference.checkpoint_dir, 'visualize'), ignore_errors=True)
+    shutil.rmtree(os.path.join(config.inference.inference_out_dir, 'visualize'), ignore_errors=True)
 with torch.no_grad(), torch.autocast(
     enabled=config.training.use_amp,
     device_type="cuda",
@@ -101,14 +107,14 @@ with torch.no_grad(), torch.autocast(
             
         if config.inference.get("render_video", False):
             result= model.module.render_video(result, **config.inference.render_video_config)
-        export_results(result, config.inference.checkpoint_dir, compute_metrics=True, resized=config.inference.get('resize', False))
+        export_results(result, config.inference.inference_out_dir, compute_metrics=True, resized=config.inference.get('resize', False))
         
 dist.barrier()
 
 if ddp_info.is_main_process and config.inference.get("compute_metrics", False):
-    summarize_evaluation(config.inference.checkpoint_dir)
+    summarize_evaluation(config.inference.inference_out_dir)
     if config.inference.get("generate_website", False):
-        os.system(f"python generate_html.py {config.inference.checkpoint_dir}")
+        os.system(f"python generate_html.py {config.inference.inference_out_dir}")
 
 dist.barrier()
 dist.destroy_process_group()

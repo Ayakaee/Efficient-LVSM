@@ -160,14 +160,17 @@ class Images2LatentScene(nn.Module):
             self.repa_encoder = encoder
         elif config.type == 'dinov3':
             import timm
-            encoder = torch.hub.load(
-                repo_or_dir='dinov3',
-                model='dinov3_vitb16',
-                source='local',
-                pretrained=False
-            )
-            state_dict = torch.load(config.model_path, map_location="cpu")
-            encoder.load_state_dict(state_dict)
+            if config.source == 'local':
+                encoder = torch.hub.load(
+                    repo_or_dir=config.model_source_dir,
+                    model='dinov3_vitb16',
+                    source='local',
+                    pretrained=False
+                )
+                state_dict = torch.load(config.model_path, map_location="cpu")
+                encoder.load_state_dict(state_dict)
+            else:
+                encoder = torch.hub.load('facebookresearch/dinov3', 'dinov3_vitb16')
             # patch_resolution = config.image_size // config.patch_size
             # encoder.rope_embed.data = timm.layers.pos_embed.resample_abs_pos_embed(
             #     encoder.rope_embed.data, [patch_resolution, patch_resolution],
@@ -548,8 +551,8 @@ class Images2LatentScene(nn.Module):
             incremental_mode: Whether to use incremental inference mode
         """
         if incremental_mode:
-            self.config.training.num_input_views = input.image.shape[1]
-            self.config.training.num_target_views = target.image.shape[1]
+            # self.config.training.num_input_views = input.image.shape[1]
+            # self.config.training.num_target_views = target.image.shape[1]
             return self.incremental_forward(input, target, has_target_image, train)
 
         # Tokenize input images with pose conditioning

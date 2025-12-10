@@ -1,4 +1,10 @@
-# Copyright (c) 2025 Haian Jin. Created for the LVSM project (ICLR 2025).
+# Copyright (c) 2025 Haian Jin. Original LVSM implementation (ICLR 2025).
+# Copyright (c) 2025 Yihang Sun. Modifications for Efficient-LVSM.
+#
+# This code is based on the LVSM project by Haian Jin et al.
+# Original repository: https://github.com/Haian-Jin/LVSM
+# 
+# Licensed under CC BY-NC-SA 4.0 - see LICENSE.md for details.
 
 import importlib
 import os
@@ -102,19 +108,16 @@ dataloader = DataLoader(
     sampler=datasampler,
 )
 dataloader_iter = iter(dataloader)
-print('dataloader ok')
 
 
 module, class_name = config.model.class_name.rsplit(".", 1)
 LVSM = importlib.import_module(module).__dict__[class_name]
 model = LVSM(config, logger).to(ddp_info.device)
-print('model ok')
+
 if config.training.use_compile:
     model = torch.compile(model)
 model = DDP(model, device_ids=[ddp_info.local_rank], find_unused_parameters=False)
-# if config.training.enable_repa:
-#     encoders, encoder_types, architectures = load_encoders(config.model.encoder_type, ddp_info.device, 256)
-print('ddpmodelcompile ok')
+
 optimizer, optimized_param_dict, all_param_dict = create_optimizer(
     model,
     config.training.weight_decay,
@@ -143,7 +146,7 @@ optimizer, lr_scheduler, cur_train_step, cur_param_update_step = auto_resume_job
     lr_scheduler,
     reset_training_state,
 )
-print('sche ok')
+
 enable_grad_scaler = config.training.use_amp and config.training.amp_dtype == "fp16"
 scaler = torch.cuda.amp.GradScaler(enabled=enable_grad_scaler)
 print_rank0(f"Grad scaler enabled: {enable_grad_scaler}")
@@ -151,8 +154,7 @@ dist.barrier()
 
 start_train_step = cur_train_step
 model.train()
-print('len:', len(dataset))
-# 记录实际训练开始时间（跳过resume的部分）
+
 actual_training_start_time = datetime.now()
 if ddp_info.is_main_process:
     logger.info(f"Actual training started at: {actual_training_start_time.strftime('%Y-%m-%d %H:%M:%S')}")
@@ -190,8 +192,6 @@ while cur_train_step <= total_train_steps and (datetime.now() - training_start_t
         ret_dict = model(input, target)
 
     current_epoch = int(cur_train_step * total_batch_size // len(dataset))
-    if current_epoch > config.training.repa_stop_epoch and config.training.repa_stop_epoch > -1:
-        model.module.loss_computer.config.training.proj_loss_weight = 0.0
     update_grads = (cur_train_step + 1) % grad_accum_steps == 0 or cur_train_step == total_train_steps
     if update_grads:
         with model.no_sync(): # no sync grads for efficiency
@@ -276,7 +276,6 @@ while cur_train_step <= total_train_steps and (datetime.now() - training_start_t
             total_time_seconds = (current_time - training_start_time).total_seconds()
             total_time_hours = total_time_seconds / 3600
             
-            # 基础日志数据
             base_log_dict = {
                 "iter": cur_train_step,
                 "Data Time": data_time,
@@ -291,11 +290,8 @@ while cur_train_step <= total_train_steps and (datetime.now() - training_start_t
                 "total_views": cur_train_step * total_batch_size * config.training.num_target_views
             }
             
-            # 添加损失指标
             loss_log_dict = {"train/" + k: v for k, v in loss_dict.items()}
             base_log_dict.update(loss_log_dict)
-            
-            # 记录到文件日志
             file_only_logger.info(base_log_dict)
             
             wandb.log(
@@ -326,13 +322,12 @@ while cur_train_step <= total_train_steps and (datetime.now() - training_start_t
             }
             os.makedirs(config.training.checkpoint_dir, exist_ok=True)
             
-            # 生成检查点文件名
             if should_save_by_steps:
-                # 基于epoch的保存
+                # save based on epoch
                 ckpt_path = os.path.join(config.training.checkpoint_dir, f"ckpt_{cur_epoch * 100:04f}.pt")
                 save_reason = f"epoch*100 {cur_epoch * 100}"
             else:
-                # 基于时间的保存
+                # save based on time
                 hours_elapsed = (current_time - training_start_time).total_seconds() / 3600
                 ckpt_path = os.path.join(config.training.checkpoint_dir, f"ckpt_t{hours_elapsed:.3f}h.pt")
                 save_reason = f"time {hours_elapsed:.3f}h"
@@ -340,7 +335,6 @@ while cur_train_step <= total_train_steps and (datetime.now() - training_start_t
             torch.save(checkpoint, ckpt_path)
             logger.info(f"Saved checkpoint at {save_reason} to {os.path.abspath(ckpt_path)}")
             
-            # 如果是因为时间保存的，更新上次保存时间
             if should_save_by_time:
                 last_time_save = current_time
         
@@ -359,7 +353,6 @@ while cur_train_step <= total_train_steps and (datetime.now() - training_start_t
         torch.cuda.empty_cache()
         dist.barrier()
 
-# 训练结束，输出时间统计
 training_end_time = datetime.now()
 training_duration = training_end_time - training_start_time
 actual_training_duration = training_end_time - actual_training_start_time
