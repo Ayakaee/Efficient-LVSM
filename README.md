@@ -1,196 +1,220 @@
 <div align="center">
 
-# LVSM: A Large View Synthesis Model with Minimal 3D Inductive Bias 
+# Efficient-LVSM: Faster, Cheaper, and Better Large View Synthesis Model <br> via Decoupled Co-Refinement Attention
 
-### ICLR 2025 (Oral)
+<a href="https://arxiv.org/abs/xxxx.xxxxx"><img src="https://img.shields.io/badge/arXiv-25xx.xxxxx-b31b1b.svg"></a>
+<a href="https://huggingface.co/YourUsername/Efficient-LVSM"><img src="https://img.shields.io/badge/🤗%20Hugging%20Face-Model-yellow"></a>
+<a href="https://your-project-page.github.io"><img src="https://img.shields.io/badge/Project-Page-blue"></a>
+<a href="https://github.com/YourGithub/Efficient-LVSM/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green"></a>
 
-<p align="center">  
-    <a href="https://haian-jin.github.io/">Haian Jin</a>,
-    <a href="https://hwjiang1510.github.io/">Hanwen Jiang</a>,
-    <a href="https://www.cs.unc.edu/~airsplay/">Hao Tan</a>,
-    <a href="https://kai-46.github.io/website/">Kai Zhang</a>,
-    <a href="https://sai-bi.github.io/">Sai Bi</a>,
-    <a href="https://tianyuanzhang.com/">Tianyuan Zhang</a>,
-    <a href="https://luanfujun.com/">Fujun Luan</a>,
-    <a href="https://www.cs.cornell.edu/~snavely/">Noah Snavely</a>,
-    <a href="https://zexiangxu.github.io/">Zexiang Xu</a>
+**Xiaosong Jia**<sup>1,2,*</sup>, **Yihang Sun**<sup>2,*</sup>, **Junqi You**<sup>2</sup>, **Songbur Wong**<sup>2</sup>, **Zichen Zou**<sup>2</sup>, **Junchi Yan**<sup>2</sup>, **Zuxuan Wu**<sup>1</sup>, **Yu-Gang Jiang**<sup>1</sup>
 
-</p>
-
+<sup>1</sup>Institute of Trustworthy Embodied AI (TEAI), Fudan University <br>
+<sup>2</sup>Sch. of Computer Science & Sch. of Artificial Intelligence, Shanghai Jiao Tong University
 
 </div>
-
-
-<div align="center">
-    <a href="https://haian-jin.github.io/projects/LVSM/"><strong>Project Page</strong></a> |
-    <a href="https://arxiv.org/abs/2410.17242"><strong>Paper</strong></a> 
-</div>
-
-<br>
-
-
-## 0. Clarification
-
-This is the **official repository** for the paper _"LVSM: A Large View Synthesis Model with Minimal 3D Inductive Bias"_.
-
-The code here is a **re-implementation** and **differs** from the original version developed at Adobe. However, the provided checkpoints are from the original Adobe implementation and were trained inside Adobe.
-
-We have verified that the re-implemented version matches the performance of the original. For any questions or issues, please contact Haian Jin at [haianjin0415@gmail.com](mailto:haianjin0415@gmail.com).
 
 ---
 
 
+## 📸 Demo
 
-## 1. Preparation
+<!-- <div align="center">
+  <video src="assets/compare.mp4" width="800px">
+  <br>
+  <em>Efficient-LVSM delivers high-quality novel view synthesis with up to 4.4× faster inference than LVSM, while supporting incremental inference via KV-Cache.</em>
+</div>
 
-### Environment
-```
-conda create -n LVSM python=3.11
-conda activate LVSM
+<div align="center">
+  <video src="assets/app.mp4" width="800px">
+  <br>
+  <em>Interactive demo of Efficient-LVSM performing fast, high-quality novel view synthesis with incremental inference powered by KV-Cache.</em>
+</div> -->
+
+<div align="center">
+  <img src="assets/compare.gif" width="800px">
+  <br>
+</div>
+
+<div align="center">
+  <img src="assets/app.gif" width="800px">
+  <br>
+  <em>Interactive demo of Efficient-LVSM performing fast, high-quality novel view synthesis with incremental inference powered by KV-Cache.</em>
+</div>
+
+
+## 💡 Abstract & Highlights
+
+We propose **Efficient-LVSM**, a dual-stream architecture that decouples input encoding from target decoding. Compared with previous monolithic approaches (e.g., LVSM), our design removes the quadratic complexity in input–target interactions and achieves state-of-the-art performance with significantly lower computational cost.
+
+*   🚀 **High Efficiency**: Up to **4.4× faster** inference and **2× faster** training convergence compared with LVSM.
+*   🧠 **Decoupled Architecture**: Input encoder (intra-view self-attention) + target decoder (self-then-cross attention).
+*   💾 **KV-Cache Support**: Enables **incremental inference** with nearly constant cost when adding new views via KV-Cache.
+*   🏆 **SOTA Performance**: Achieves **29.8 dB PSNR** on RealEstate10K.
+
+## 📊 Results
+
+### Quantitative Comparison
+Our model consistently outperforms existing state-of-the-art methods on, while being significantly more efficient.
+
+| Model | Parameters | Latency (ms) | GFLOPS | PSNR (RealEstate10K) |
+| :--- | :---: | :---: | :---: | :---: |
+| pixelSplat | 125M | 50.52 | 1934 | 26.09 |
+| GS-LRM | 307M | 88.24 | 5047 | 28.10 |
+| LVSM (Dec-Only) | 177M | 109.37 | 8523 | 29.67 |
+| **Efficient-LVSM (Ours)** | **199M** | **24.78** | **1325** | **29.81** |
+
+
+### Incremental Inference Efficiency
+
+Our model supports efficient incremental inference: when a new input view is inserted, it leverages KV-Cache to avoid recomputing existing views. The table below reports the latency when adding one new input view to an existing set of \(N\) input views and rendering 8 target views.
+
+| Number of Input Views | Efficient-LVSM (Ours) w/ KV-Cache (ms) | LVSM Dec-Only (ms) | Speedup Factor |
+| :-------------------: | :------------------------------------: | :-------------------------------: | :------------: |
+| 4                     | 24.37                                  | 123.1                             | **5.1x**       |
+| 8                     | 28.62                                  | 286.0                             | **10.0x**      |
+| 16                    | 42.96                                  | 801.7                             | **18.7x**      |
+| 32                    | 72.84                                  | 2592                              | **35.6x**      |
+| 48                    | 103.26                                 | 5408                              | **52.4x**      |
+| 64                    | 138.43                                 | 9231                              | **66.7x**      |
+
+*All measurements are obtained using* `scripts/eval_efficiency.sh`.
+
+
+
+## 🚀 Get Started
+
+### Requirements
+
+- Python 3.11+
+- PyTorch 2.0+
+- CUDA 11.8+ (for GPU acceleration)
+
+### 🛠️ Installation
+
+```bash
+# 1. Clone the repository
+git clone git@github.com:Ayakaee/Efficient-LVSM.git
+cd Efficient-LVSM
+
+# 2. Create conda environment
+conda create -n efficient-lvsm python=3.11
+conda activate efficient-lvsm
+
+# 3. Install PyTorch (adjust CUDA version as needed)
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+
+# 4. Install dependencies
 pip install -r requirements.txt
 ```
-As we used [xformers](https://github.com/facebookresearch/xformers) `memory_efficient_attention`, the GPU device compute capability needs > 8.0. Otherwise, it would pop up an error. Check your GPU compute capability in [CUDA GPUs Page](https://developer.nvidia.com/cuda-gpus#compute).
 
-### Data
-Download the RealEstate10K dataset from [this link](http://schadenfreude.csail.mit.edu:8000/), which is provided by [pixelSplat](https://github.com/dcharatan/pixelsplat), and `unzip` the zip file and put the data in `YOUR_RAW_DATAPATH`.
-Run the following command to preprocess the data into our format.
+### 📦 Model Zoo
+
+**Efficient-LVSM Scene-Level (512×512 resolution)**
+- 🔗 [Download Link](https://huggingface.co/coast01/LVSM/resolve/main/scene_decoder_only_256.pt?download=true)
+- 📊 Performance: PSNR: 29.81 | SSIM: 0.906 | LPIPS: 0.098
+- 🎯 Training Dataset: [RealEstate10K](http://schadenfreude.csail.mit.edu:8000/)
+- 💾 Model Size: ~199M parameters
+
+Note: Our model performance may degrade when given images with aspect ratios or resolutions different from those seen during training. If you plan to use the model for inference at other resolutions, we recommend fine-tuning the model for the specific resolution.
+
+### 🎯 Quick Start
+
+Download the pretrained model and run inference with a single command:
+
 ```bash
-python process_data.py --base_path YOUR_RAW_DATAPATH --output_dir YOUR_PROCESSED_DATAPATH --mode ['train' or 'test']
+# Download model checkpoint
+wget https://huggingface.co/coast01/LVSM/resolve/main/scene_decoder_only_256.pt
+
+# Run inference
+bash scripts/eval.sh
 ```
 
-### Checkpoints
-The scene-level evaluation is conducted on the [RealEstate10K](http://schadenfreude.csail.mit.edu:8000/) dataset prepocessed by [pixelSplat](https://github.com/dcharatan/pixelsplat). The model checkpoints are host on [HuggingFace](https://huggingface.co/coast01/LVSM/tree/main). 
+## 🚀 Inference
 
-| Model | PSNR  | SSIM  | LPIPS |
-| ----- | ----- | ----- | ----- |
-| [LVSM Decoder-Only Scene-Level res256×256 (full)](https://huggingface.co/coast01/LVSM/resolve/main/scene_decoder_only_256.pt?download=true) | 29.67 | 0.906 | 0.098 |
-| [LVSM Encoder-Decoder Scene-Level res256×256 (full)](https://huggingface.co/coast01/LVSM/resolve/main/scene_encoder_decoder_256.pt?download=true) | 28.60 | 0.893 | 0.114 |
-| [LVSM Decoder-Only Scene-Level res512×512](https://huggingface.co/coast01/LVSM/blob/main/lvsm_scene_decoder_only_res512.pt) | N/A | N/A | N/A |
-| [LVSM Encoder-Decoder Scene-Level res512×512](https://huggingface.co/coast01/LVSM/blob/main/lvsm_scene_encoder_decoder_res512.pt) | N/A | N/A | N/A |
+### 1. Standard Inference
 
-As we discussed in the limitation sections of this paper:
-
->Our model’s performance degrades when provided with images with aspect ratios and resolutions different from those seen during training.
-
-Therefore, if you plan to use the model for inference at resolutions or aspect ratios different from those used to train our provided checkpoints (256×256 or 512×512), we recommend fine-tuning the model for the specific resolution and aspect ratio.
-
-
-
-## 2. Training
-
-Before training, you need to follow the instructions [here](https://docs.wandb.ai/guides/track/public-api-guide/#:~:text=You%20can%20generate%20an%20API,in%20the%20upper%20right%20corner.) to generate the Wandb key file for logging and save it in the `configs` folder as `api_keys.yaml`. You can use the `configs/api_keys_example.yaml` as a template.
-
-The original training command:
 ```bash
-torchrun --nproc_per_node 8 --nnodes 8 \
-    --rdzv_id 18635 --rdzv_backend c10d --rdzv_endpoint localhost:29502 \
-    train.py --config configs/LVSM_scene_decoder_only.yaml
+bash scripts/eval.sh
 ```
-The training will be distributed across 8 GPUs and 8 nodes with a total batch size of 512.
-`LVSM_scene_decoder_only.yaml` is the config file for the scene-level Decoder-Only LVSM model. You can also use `LVSM_scene_encoder_decoder.yaml` for the training of the scene-level Encoder-Decoder LVSM model.
 
-If you have limited resources, you can use the following command to train a smaller model with a smaller batch size:
-```bash
-torchrun --nproc_per_node 8 --nnodes 1 \
-    --rdzv_id 18635 --rdzv_backend c10d --rdzv_endpoint localhost:29502 \
-    train.py --config configs/LVSM_scene_decoder_only.yaml \
-    model.transformer.n_layer = 12 \
-    training.batch_size_per_gpu = 16
+We use `./data/evaluation_index_re10k.json` to specify the input and target view indices. This JSON file is adapted from [pixelSplat](https://github.com/dcharatan/pixelsplat). 
 
-```
-Here, we decrease the total batch size from 512 to 128, and the transformer layers from 24 to 12. You can also increase the patch-size from 8 to 16 for faster training with lower performance. 
-We have also discussed the efficient settings (single/two GPU training) in the paper.
+By default, we use the full list of scenes (`full_list.txt`) for evaluation. If you only need a quick test run, you can switch to `partial_list.txt` (first 100 scenes), but the results will be less accurate.
 
+After inference, the code generates an HTML file in the `inference_out_dir` folder. You can open this HTML file in a browser to view the results.
 
-## 3. Inference
+### 2. Incremental Inference Demo
 
-### 3.1 Standard Inference
+For incremental inference, where input views are processed one by one and each intermediate result is visualized, we provide a demo based on `gradio`:
 
 ```bash
-torchrun --nproc_per_node 8 --nnodes 1 \
---rdzv_id 18635 --rdzv_backend c10d --rdzv_endpoint localhost:29506 \
-inference.py --config "configs/LVSM_scene_decoder_only.yaml" \
-training.dataset_path = "./preprocessed_data/test/full_list.txt" \
-training.batch_size_per_gpu = 4 \
-training.target_has_input =  false \
-training.num_views = 5 \
-training.square_crop = true \
-training.num_input_views = 2 \
-training.num_target_views = 3 \
-inference.if_inference = true \
-inference.compute_metrics = true \
-inference.render_video = true \
-inference_out_dir = ./experiments/evaluation/test
-```
-We use `./data/evaluation_index_re10k.json` to specify the input and target view indice. This json file is originally from [pixelSplat](https://github.com/dcharatan/pixelsplat). 
-
-After the inference, the code will generate a html file in the `inference_out_dir` folder. You can open the html file to view the results.
-
-### 3.2 Incremental Inference
-
-For incremental inference, where input views are processed one by one with each inference result exported separately, use the `inference_incremental.py` script:
-
-```bash
-torchrun --nproc_per_node 8 --nnodes 1 \
---rdzv_id 18635 --rdzv_backend c10d --rdzv_endpoint localhost:29506 \
-inference_incremental.py --config "configs/LVSM_scene_decoder_only.yaml" \
-training.dataset_path = "./preprocessed_data/test/full_list.txt" \
-training.batch_size_per_gpu = 1 \
-training.target_has_input = false \
-training.num_input_views = 4 \
-training.num_target_views = 1 \
-inference.if_inference = true \
-inference.compute_metrics = true \
-inference.render_video = true \
-inference.checkpoint_dir = ./experiments/evaluation/incremental
+bash scripts/app.sh
 ```
 
 **Key Features:**
 - Processes input views sequentially (1, 2, 3, 4 views, etc.)
-- Exports results after each view is processed
-- Utilizes KV cache for improved efficiency
-- Results saved in separate subdirectories for each view count
+- Interactive inference: freely add or remove views
+- Utilizes KV-Cache for improved efficiency
 
-**Output Structure:**
-```
-experiments/evaluation/incremental/
-├── view_000/  # Results with 1 input view
-├── view_001/  # Results with 2 input views
-├── view_002/  # Results with 3 input views
-└── view_003/  # Results with 4 input views
-```
 
-For more details, see [Incremental Inference Guide](INCREMENTAL_INFERENCE.md).
+### 3. Incremental Inference Efficiency
 
-### 3.3 Performance Comparison
-
-To compare the performance between standard and incremental inference:
+To evaluate the latency and memory overhead during incremental inference:
 
 ```bash
-python compare_inference.py --max_views 8 --num_trials 3
+bash scripts/eval_efficiency.sh
 ```
 
-This will generate performance metrics and visualization plots comparing:
-- Inference time
-- Memory usage
-- Speedup ratios
-- Memory savings
+You can set the maximum number of input views and the number of target views by modifying `training.num_input_views` and `training.num_target_views` in the config file.
 
-## 4. Citation 
+The results are saved to `incremental_result.csv`.
+
+## 🏋️ Training
+
+### Dataset Preparation
+
+Download and prepare the RealEstate10K dataset:
+
+```bash
+# Download RealEstate10K dataset
+# Follow instructions at: http://schadenfreude.csail.mit.edu:8000/
+
+# Prepare dataset structure
+python utils/process_data.py --data_dir /path/to/realestate10k
+```
+
+### Training Command
+
+You need to create a WandB API key file for logging and save it as `configs/api_keys.yaml`.
+
+```bash
+torchrun --nproc_per_node 4 --nnodes 1 \
+    --rdzv_id 18635 --rdzv_backend c10d --rdzv_endpoint localhost:29502 \
+    train.py --config configs/Efficient-LVSM.yaml
+```
+
+The training will be distributed across 4 GPUs and 1 node. `Efficient-LVSM.yaml` is the configuration file for the model.
+
+You can also use the provided bash script for simplicity:
+```bash
+bash scripts/train.sh
+```
+
+
+## 📝 Citation 
 
 If you find this work useful in your research, please consider citing:
 
 ```bibtex
-@inproceedings{
-jin2025lvsm,
-title={LVSM: A Large View Synthesis Model with Minimal 3D Inductive Bias},
-author={Haian Jin and Hanwen Jiang and Hao Tan and Kai Zhang and Sai Bi and Tianyuan Zhang and Fujun Luan and Noah Snavely and Zexiang Xu},
-booktitle={The Thirteenth International Conference on Learning Representations},
-year={2025},
-url={https://openreview.net/forum?id=QQBPWtvtcn}
+@article{efficient-lvsm2025,
+  title={Efficient-LVSM: Faster, Cheaper, and Better Large View Synthesis Model via Decoupled Co-Refinement Attention},
+  author={Jia, Xiaosong and Sun, Yihang and You, Junqi and Wong, Songbur and Zou, Zichen and Yan, Junchi and Wu, Zuxuan and Jiang, Yu-Gang},
+  journal={arXiv preprint arXiv:xxxx.xxxxx},
+  year={2025}
 }
 ```
 
-## 5. Acknowledgement
-We thank Kalyan Sunkavalli for helpful discussions and support. This work was done when Haian Jin, Hanwen Jiang, and Tianyuan Zhang were research interns at Adobe Research.  This work was also partly funded by the National Science Foundation (IIS-2211259, IIS-2212084).
+## 🙏 Acknowledgement
 
+This work is supported by the Institute of Trustworthy Embodied AI (TEAI) at Fudan University and Shanghai Jiao Tong University. We thank the authors of [LVSM](https://github.com/hkust-vgd/LVSM) and [pixelSplat](https://github.com/dcharatan/pixelsplat) for their valuable open-source contributions.

@@ -384,16 +384,11 @@ with gr.Blocks(title="Efficient-LVSM Interactive", theme=gr.themes.Soft(), css=c
     )
 
 if __name__ == "__main__":
-    import tempfile
-    
-    # 获取用户提供的 root_path
-    my_root_path = 'https://notebook-inspire.sii.edu.cn/ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6/project-e754cc6f-3141-4d5c-af33-9182b2086005/user-17e177ba-08cc-4b43-adf3-a391730a32e5/vscode/9102cd95-6a0a-433c-bcc9-77af271e09be/30c86dde-3367-42e7-abf9-53afdb4b7eb7/proxy/7860/'
-    
     allowed_paths = [".", "/tmp", tempfile.gettempdir()]
-    
+
     demo.queue().launch(
-        server_name="0.0.0.0", 
-        share=False, 
+        server_name="0.0.0.0",
+        share=False,
         allowed_paths=allowed_paths,
-        root_path=my_root_path
+        # root_path=""  # if running on servers, set to the specific root path
     )
