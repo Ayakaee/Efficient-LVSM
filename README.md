@@ -3,9 +3,9 @@
 # Efficient-LVSM: Faster, Cheaper, and Better Large View Synthesis Model <br> via Decoupled Co-Refinement Attention
 
 <a href="https://arxiv.org/abs/xxxx.xxxxx"><img src="https://img.shields.io/badge/arXiv-25xx.xxxxx-b31b1b.svg"></a>
-<a href="https://huggingface.co/YourUsername/Efficient-LVSM"><img src="https://img.shields.io/badge/🤗%20Hugging%20Face-Model-yellow"></a>
+<a href="https://huggingface.co/Ayakaee/efficient-lvsm"><img src="https://img.shields.io/badge/🤗%20Hugging%20Face-Model-yellow"></a>
 <a href="https://your-project-page.github.io"><img src="https://img.shields.io/badge/Project-Page-blue"></a>
-<a href="https://github.com/YourGithub/Efficient-LVSM/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green"></a>
+<a href="https://github.com/Ayakaee/Efficient-LVSM/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green"></a>
 
 **Xiaosong Jia**<sup>1,2,*</sup>, **Yihang Sun**<sup>2,*</sup>, **Junqi You**<sup>2</sup>, **Songbur Wong**<sup>2</sup>, **Zichen Zou**<sup>2</sup>, **Junchi Yan**<sup>2</sup>, **Zuxuan Wu**<sup>1</sup>, **Yu-Gang Jiang**<sup>1</sup>
 
@@ -62,7 +62,7 @@ Our model consistently outperforms existing state-of-the-art methods on, while b
 | pixelSplat | 125M | 50.52 | 1934 | 26.09 |
 | GS-LRM | 307M | 88.24 | 5047 | 28.10 |
 | LVSM (Dec-Only) | 177M | 109.37 | 8523 | 29.67 |
-| **Efficient-LVSM (Ours)** | **199M** | **24.78** | **1325** | **29.81** |
+| **Efficient-LVSM (Ours)** | **199M** | **24.78** | **1325** | **29.86** |
 
 
 ### Incremental Inference Efficiency
@@ -110,15 +110,15 @@ pip install -r requirements.txt
 
 ### 📦 Model Zoo
 
-**Efficient-LVSM Scene-Level (512×512 resolution)**
-- 🔗 [Download Link](https://huggingface.co/Ayakaee/efficient-lvsm/blob/main/efficient_lvsm_res512.pt)
-- 📊 Performance: PSNR: 29.86 | SSIM: 0.905 | LPIPS: 0.147
+**Efficient-LVSM (Scene-Level, 512×512 resolution)**
+- 🔗 Checkpoint: `https://huggingface.co/Ayakaee/efficient-lvsm/blob/main/efficient_lvsm_res512.pt`
+- 📊 Performance on RealEstate10K: PSNR 29.86, SSIM 0.905, LPIPS 0.147
 - 🎯 Training Dataset: [RealEstate10K](http://schadenfreude.csail.mit.edu:8000/)
 - 💾 Model Size: ~199M parameters
 
-**Efficient-LVSM Scene-Level (512×512 resolution)**
-- 🔗 [Download Link](https://huggingface.co/Ayakaee/efficient-lvsm/blob/main/efficient_lvsm_res256.pt)
-- 📊 Performance: PSNR: 28.93 | SSIM: 0.895 | LPIPS: 0.102
+**Efficient-LVSM (Scene-Level, 256×256 resolution)**
+- 🔗 Checkpoint: `https://huggingface.co/Ayakaee/efficient-lvsm/blob/main/efficient_lvsm_res256.pt`
+- 📊 Performance on RealEstate10K: PSNR 28.93, SSIM 0.895, LPIPS 0.102
 - 🎯 Training Dataset: [RealEstate10K](http://schadenfreude.csail.mit.edu:8000/)
 - 💾 Model Size: ~199M parameters
 
