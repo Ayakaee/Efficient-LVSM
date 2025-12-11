@@ -3,24 +3,11 @@ pretrained_models
 preprocessed_data
 experiments
 *log
-data/*list.json
-extracted_features/
-feature_visualizations-o/
-feature_visualizations/
-objaverse-xl/scripts/rendering/data*
-dataset/
 logs
 dinov3/
 back/
-data/views
-data/test
-data/train
-data/0*
 logs/
-todo.md
-*.sh
 *.pt
-*.txt
 *.csv
 *.npy
 experiments/
@@ -30,7 +17,6 @@ wandb/
 .DS_Store
 .vscode
 pretrained_model
-objaverse-xl/scripts/rendering/blender-3.2.2-linux-x64/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -1,28 +1,19 @@
 model:
-  class_name: model.LVSM_scene_decoder_only.Images2LatentScene
+  class_name: model.efficient_lvsm.Images2LatentScene
   repa_encoder_type: PE-Core-L14 # dinov2-vit-b
   projector_dim: 2048
-  freeze_image_encoder: true
+  freeze_repa_encoder: true
   align_resolution: false
   repa_config: 1
-  repa_projector_type: linear3
-  extra_enc: none
-  enc_layer: 2
-  concat_rgb: true
-  distill_half_dim: false
-  label2x: true
-  repa_concat: false
-  use_log_scale: none
 
   image_tokenizer:
-    type: linear # dino or linear or none
+    type: none
     image_size: 256
     patch_size: 8
     in_channels: 9  # 3 RGB + 3 direction + 3 Reference
-    use_patch_interpolation: true
-    source: github
-    model_path: /root/.cache/torch/hub/checkpoints/dinov2_vitb14_pretrain.pth
-    model_source_dir: 
+    source: local
+    model_path: pretrained/dinov3_vitb16_pretrain_lvd1689m-73cec8be.pth
+    model_source_dir: dinov3
 
   target_pose_tokenizer:
     image_size: 256
@@ -31,14 +22,11 @@ model:
   transformer:
     d: 768
     d_head: 64
-    n_layer: 24
+    n_layer: 12
     special_init: true
     depth_init: true
     use_qk_norm: true
-    attention_arch: flex
-    input_mode : embed
-    input_scope: local
-    mode: self # 'self' or 'cross' or 'both'
+    attention_arch: flash
 
 training:
   amp_dtype: bf16
@@ -46,10 +34,10 @@ training:
   batch_size_per_gpu: 2
   beta1: 0.9
   beta2: 0.95
-  allowed_gradnorm_factor: 10 # 5
+  allowed_gradnorm_factor: 10
   center_crop: true
   scene_scale_factor: 1.35
-  checkpoint_dir: ./experiments/checkpoints/7.8-test
+  checkpoint_dir: ./experiments/checkpoints
   checkpoint_every: 2000
   checkpoint_every_epoch: 1
   checkpoint_every_time: 1
@@ -59,15 +47,15 @@ training:
   dataset_len: 66033
   grad_accum_steps: 1
   grad_checkpoint_every: 1
-  grad_clip_norm: 10 # 1.0
+  gradient_checkpoint: false
+  grad_clip_norm: 5
 
   enable_repa: false
-  repa_stop_epoch: -1
   l2_loss_weight: 1.0
   lpips_loss_weight: 0.0
   perceptual_loss_weight: 0.5
   proj_loss_weight: 0.5
-  encode_depth: 8
+  proj_loss_type: sl1
 
   lr: 0.0004
   train_steps: 20000
@@ -101,6 +89,7 @@ training:
   
   wandb_project: LVSM
   warmup: 3000
+  scheduler_type: constant
   weight_decay: 0.05
   backup_code: true
 
@@ -110,6 +99,7 @@ inference:
   if_inference: False
   compute_metrics: False
   view_idx_file_path: ./data/evaluation_index_re10k.json
+  resize: false
   render_video: False
   render_video_config:
     traj_type: interpolate
