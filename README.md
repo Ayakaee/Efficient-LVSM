@@ -7,11 +7,14 @@
 <a href="https://your-project-page.github.io"><img src="https://img.shields.io/badge/Project-Page-blue"></a>
 <a href="https://github.com/Ayakaee/Efficient-LVSM/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green"></a>
 
-**Xiaosong Jia**<sup>1,2,*</sup>, **Yihang Sun**<sup>2,*</sup>, **Junqi You**<sup>2</sup>, **Songbur Wong**<sup>2</sup>, **Zichen Zou**<sup>2</sup>, **Junchi Yan**<sup>2</sup>, **Zuxuan Wu**<sup>1</sup>, **Yu-Gang Jiang**<sup>1</sup>
+**Xiaosong Jia**<sup>1,2*</sup>, **Yihang Sun**<sup>2*</sup>, **Junqi You**<sup>2*</sup>, **Songbur Wong**<sup>2</sup>, **Zichen Zou**<sup>2</sup>, **Junchi Yan**<sup>2†</sup>, **Zuxuan Wu**<sup>1</sup>, **Yu-Gang Jiang**<sup>1</sup>
 
 <sup>1</sup>Institute of Trustworthy Embodied AI (TEAI), Fudan University <br>
 <sup>2</sup>Sch. of Computer Science & Sch. of Artificial Intelligence, Shanghai Jiao Tong University
 
+<small><sup>*</sup>Equal contribution &nbsp; <sup>†</sup>Corresponding authors</small>
+
+> 📧 Primary Contact: [Xiaosong Jia](https://jiaxiaosong1002.github.io/) (jiaxiaosong@fudan.edu.cn)
 </div>
 
 ---
@@ -226,4 +229,4 @@ If you find this work useful in your research, please consider citing:
 
 ## 🙏 Acknowledgement
 
-This work is supported by the Institute of Trustworthy Embodied AI (TEAI) at Fudan University and Shanghai Jiao Tong University. We thank the authors of [LVSM](https://github.com/hkust-vgd/LVSM) and [pixelSplat](https://github.com/dcharatan/pixelsplat) for their valuable open-source contributions.
+We thank the authors of [LVSM](https://github.com/hkust-vgd/LVSM) and [pixelSplat](https://github.com/dcharatan/pixelsplat) for their valuable open-source contributions.
