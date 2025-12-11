@@ -111,8 +111,14 @@ pip install -r requirements.txt
 ### 📦 Model Zoo
 
 **Efficient-LVSM Scene-Level (512×512 resolution)**
-- 🔗 [Download Link](https://huggingface.co/coast01/LVSM/resolve/main/scene_decoder_only_256.pt?download=true)
-- 📊 Performance: PSNR: 29.81 | SSIM: 0.906 | LPIPS: 0.098
+- 🔗 [Download Link](https://huggingface.co/Ayakaee/efficient-lvsm/blob/main/efficient_lvsm_res512.pt)
+- 📊 Performance: PSNR: 29.86 | SSIM: 0.905 | LPIPS: 0.147
+- 🎯 Training Dataset: [RealEstate10K](http://schadenfreude.csail.mit.edu:8000/)
+- 💾 Model Size: ~199M parameters
+
+**Efficient-LVSM Scene-Level (512×512 resolution)**
+- 🔗 [Download Link](https://huggingface.co/Ayakaee/efficient-lvsm/blob/main/efficient_lvsm_res256.pt)
+- 📊 Performance: PSNR: 28.93 | SSIM: 0.895 | LPIPS: 0.102
 - 🎯 Training Dataset: [RealEstate10K](http://schadenfreude.csail.mit.edu:8000/)
 - 💾 Model Size: ~199M parameters
 
@@ -151,6 +157,9 @@ For incremental inference, where input views are processed one by one and each i
 ```bash
 bash scripts/app.sh
 ```
+For this demo, we provide a more generalizable checkpoint, which can be downloaded from: `https://huggingface.co/Ayakaee/efficient-lvsm/blob/main/efficient_lvsm_inc_demo.pt`.
+
+Note: Due to the uncertain latency introduced by Gradio, the latency shown in this demo is **not** the accurate latency of our model. For precise evaluation, please use `scripts/eval_efficiency.sh`.
 
 **Key Features:**
 - Processes input views sequentially (1, 2, 3, 4 views, etc.)
