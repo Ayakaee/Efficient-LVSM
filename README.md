@@ -230,7 +230,7 @@ bash scripts/train.sh
 If you find this work useful in your research, please consider citing:
 
 ```bibtex
-@article{efficient-lvsm2025,
+@article{jia2025efficient-lvsm,
   title={Efficient-LVSM: Faster, Cheaper, and Better Large View Synthesis Model via Decoupled Co-Refinement Attention},
   author={Jia, Xiaosong and Sun, Yihang and You, Junqi and Wong, Songbur and Zou, Zichen and Yan, Junchi and Wu, Zuxuan and Jiang, Yu-Gang},
   journal={International Conference on Learning Representations (ICLR)},
