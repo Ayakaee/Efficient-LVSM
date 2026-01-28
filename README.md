@@ -233,8 +233,8 @@ If you find this work useful in your research, please consider citing:
 @article{efficient-lvsm2025,
   title={Efficient-LVSM: Faster, Cheaper, and Better Large View Synthesis Model via Decoupled Co-Refinement Attention},
   author={Jia, Xiaosong and Sun, Yihang and You, Junqi and Wong, Songbur and Zou, Zichen and Yan, Junchi and Wu, Zuxuan and Jiang, Yu-Gang},
-  journal={arXiv preprint arXiv:xxxx.xxxxx},
-  year={2025}
+  journal={International Conference on Learning Representations (ICLR)},
+  year={2026}
 }
 ```
 
