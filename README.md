@@ -4,10 +4,10 @@
 
 <a href="https://arxiv.org/abs/xxxx.xxxxx"><img src="https://img.shields.io/badge/arXiv-25xx.xxxxx-b31b1b.svg"></a>
 <a href="https://huggingface.co/Ayakaee/efficient-lvsm"><img src="https://img.shields.io/badge/🤗%20Hugging%20Face-Model-yellow"></a>
-<a href="https://your-project-page.github.io"><img src="https://img.shields.io/badge/Project-Page-blue"></a>
+<a href="https://ayakaee.github.io/Efficient-LVSM-demo/"><img src="https://img.shields.io/badge/Project-Page-blue"></a>
 <a href="https://github.com/Ayakaee/Efficient-LVSM/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green"></a>
 
-**Xiaosong Jia**<sup>1,2*</sup>, **Yihang Sun**<sup>2*</sup>, **Junqi You**<sup>2*</sup>, **Songbur Wong**<sup>2</sup>, **Zichen Zou**<sup>2</sup>, **Junchi Yan**<sup>2†</sup>, **Zuxuan Wu**<sup>1</sup>, **Yu-Gang Jiang**<sup>1</sup>
+**Xiaosong Jia**<sup>1*</sup>, **Yihang Sun**<sup>2*</sup>, **Junqi You**<sup>2*</sup>, **Songbur Wong**<sup>2</sup>, **Zichen Zou**<sup>2</sup>, **Junchi Yan**<sup>2†</sup>, **Zuxuan Wu**<sup>1</sup>, **Yu-Gang Jiang**<sup>1</sup>
 
 <sup>1</sup>Institute of Trustworthy Embodied AI (TEAI), Fudan University <br>
 <sup>2</sup>Sch. of Computer Science & Sch. of Artificial Intelligence, Shanghai Jiao Tong University
@@ -172,6 +172,15 @@ Note: Due to the uncertain latency introduced by Gradio, the latency shown in th
 
 ### 3. Incremental Inference Efficiency
 
+We introduce an Incremental Inference Benchmark that evaluates how model performance and efficiency evolve as input views are provided sequentially.
+
+This benchmark reflects realistic deployment scenarios where:
+- Input views arrive over time
+- Intermediate predictions are required
+- Recomputing from scratch is impractical
+
+Efficient-LVSM supports incremental inference via explicit state reuse (e.g. KV cache), enabling efficient updates without reprocessing previously observed views.
+
 To evaluate the latency and memory overhead during incremental inference:
 
 ```bash
@@ -181,6 +190,8 @@ bash scripts/eval_efficiency.sh
 You can set the maximum number of input views and the number of target views by modifying `training.num_input_views` and `training.num_target_views` in the config file.
 
 The results are saved to `incremental_result.csv`.
+
+See [Incremental Inference Guide](increamental_inference_benchmark/README.md) for benchmark design, motivation, and application scenarios.
 
 ## 🏋️ Training
 

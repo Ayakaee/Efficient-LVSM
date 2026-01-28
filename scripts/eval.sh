@@ -1,15 +1,12 @@
 export NCCL_SOCKET_IFNAME="lo"
-export CUDA_VISIBLE_DEVICES=0,1,2,3
+export CUDA_VISIBLE_DEVICES=0
 
-model=9.11-dinov3-ex=4-8-3-layer=24-finetune-4/ckpt_t22.002h.pt
-# model=12.10-finetune-fl/ckpt_t0.100h.pt
-# model=9.5-dinov3-ex=0-8-3-layer=24-scale/ckpt_242200.000000.pt
-model=9.14-dinov3-ex=0-8-3-layer=24-scale-repastop/ckpt_0.000000.pt
+model=efficient_lvsm_res256
 
-torchrun --nproc_per_node 4 --nnodes 1 \
---rdzv_id 18642 --rdzv_backend c10d --rdzv_endpoint localhost:29512 \
+torchrun --nproc_per_node 1 --nnodes 1 \
+--rdzv_id 18642 --rdzv_backend c10d --rdzv_endpoint localhost:29256 \
 inference.py --config configs/Efficient-LVSM.yaml \
-    training.dataset_path = ../test/full_list.txt \
+    training.dataset_path = ../backup/test/full_list.txt \
     training.batch_size_per_gpu = 12 \
     training.target_has_input =  false \
     training.num_input_views = 2 \
@@ -19,9 +16,9 @@ inference.py --config configs/Efficient-LVSM.yaml \
     inference.render_video = false \
     training.enable_repa = false \
     training.use_compile = false \
-    inference.checkpoint_dir = experiments/checkpoints/$model \
+    inference.checkpoint_dir = efficient_lvsm_res256.pt \
     inference.inference_out_dir = experiments/evaluation/$model \
     model.transformer.n_layer = 12 \
-    model.target_pose_tokenizer.image_size = 512 \
-    model.image_tokenizer.image_size = 512 \
+    model.target_pose_tokenizer.image_size = 256 \
+    model.image_tokenizer.image_size = 256 \
     

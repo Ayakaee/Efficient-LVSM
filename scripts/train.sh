@@ -21,4 +21,3 @@ torchrun --nproc_per_node 2 --nnodes 1 \
     training.num_input_views = 2 \
     training.num_target_views = 6 \
     model.repa_config = 8-2 \
-

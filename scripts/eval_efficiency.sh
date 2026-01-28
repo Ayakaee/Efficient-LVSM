@@ -15,6 +15,6 @@ analyse_inc.py --config configs/Efficient-LVSM.yaml \
     inference.render_video = false \
     training.enable_repa = false \
     training.use_compile = false \
-    inference.checkpoint_dir = experiments/checkpoints/9.14-dinov3-ex=0-8-3-layer=24-scale-repastop/ckpt_0.000000.pt \
+    inference.checkpoint_dir = efficient_lvsm_res256.pt \
     model.transformer.n_layer = 12 \
     inference.resize = false \
