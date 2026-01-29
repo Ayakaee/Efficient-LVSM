@@ -82,7 +82,6 @@ dist.barrier()
 datasampler.set_epoch(0)
 model.eval()
 
-# 如果启用特征提取，创建保存目录
 if config.inference.extract_features and ddp_info.is_main_process:
     os.makedirs(config.inference.feature_save_dir, exist_ok=True)
 

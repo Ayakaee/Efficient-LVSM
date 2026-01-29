@@ -59,7 +59,6 @@ total_param_update_steps = total_train_steps
 total_train_steps = total_train_steps * grad_accum_steps # real train steps when using gradient accumulation
 save_every_steps = int(config.training.dataset_len * config.training.checkpoint_every_epoch // (total_batch_size) ) + 1
 
-# 记录训练开始时间
 training_start_time = datetime.now()
 if ddp_info.is_main_process:
     logger.info(f"\n{'='*60}")
@@ -74,7 +73,6 @@ if ddp_info.is_main_process:
     logger.info(f"  - Enable REPA: {config.training.enable_repa}")
     logger.info(f"{'='*60}\n")
 
-# 添加基于时间的保存配置
 total_train_hours = config.training.get("train_time", 12)
 save_every_hours = config.training.get("checkpoint_every_time", 1.0)
 save_every_seconds = int(save_every_hours * 3600)
@@ -343,7 +341,6 @@ while cur_train_step <= total_train_steps and (datetime.now() - training_start_t
             vis_path = os.path.join(config.training.checkpoint_dir, 'visualize')
             vis_path = os.path.join(vis_path, f"iter_{cur_train_step:08d}")
             os.makedirs(vis_path, exist_ok=True)
-            print(111111111)
             visualize_intermediate_results(vis_path, ret_dict)
             torch.cuda.empty_cache()
             model.train()
