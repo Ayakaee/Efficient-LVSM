@@ -2,12 +2,12 @@
 
 # Efficient-LVSM: Faster, Cheaper, and Better Large View Synthesis Model <br> via Decoupled Co-Refinement Attention
 
-<a href="https://arxiv.org/abs/xxxx.xxxxx"><img src="https://img.shields.io/badge/arXiv-25xx.xxxxx-b31b1b.svg"></a>
+<a href="https://arxiv.org/abs/2602.06478v1"><img src="https://img.shields.io/badge/arXiv-2602.06478-b31b1b.svg"></a>
 <a href="https://huggingface.co/Ayakaee/efficient-lvsm"><img src="https://img.shields.io/badge/🤗%20Hugging%20Face-Model-yellow"></a>
-<a href="https://ayakaee.github.io/Efficient-LVSM-demo/"><img src="https://img.shields.io/badge/Project-Page-blue"></a>
+<a href="https://efficient-lvsm.github.io/"><img src="https://img.shields.io/badge/Project-Page-blue"></a>
 <a href="https://github.com/Ayakaee/Efficient-LVSM/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green"></a>
 
-**Xiaosong Jia**<sup>1*</sup>, **Yihang Sun**<sup>2*</sup>, **Junqi You**<sup>2*</sup>, **Songbur Wong**<sup>2</sup>, **Zichen Zou**<sup>2</sup>, **Junchi Yan**<sup>2†</sup>, **Zuxuan Wu**<sup>1</sup>, **Yu-Gang Jiang**<sup>1</sup>
+**Xiaosong Jia**<sup>1*</sup>, **Yihang Sun**<sup>2*</sup>, **Junqi You**<sup>2*</sup>, **Songbur Wong**<sup>2</sup>, **Zichen Zou**<sup>2</sup>, **Junchi Yan**<sup>2†</sup>, **Zuxuan Wu**<sup>1†</sup>, **Yu-Gang Jiang**<sup>1</sup>
 
 <sup>1</sup>Institute of Trustworthy Embodied AI (TEAI), Fudan University <br>
 <sup>2</sup>Sch. of Computer Science & Sch. of Artificial Intelligence, Shanghai Jiao Tong University
